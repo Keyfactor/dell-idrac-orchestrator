@@ -17,15 +17,17 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
         //Necessary to implement IInventoryJobExtension but not used.  Leave as empty string.
         public string ExtensionName => "";
 
+        public string racadmPath;
         public string IP;
         public string user;
         public string password;
+        ILogger logger;
 
         public void runRacadm(string args)
         {
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
-                FileName = "C:\\Program Files (x86)\\Dell\\SysMgt\\rac5\\racadm.exe",
+                FileName = $"{racadmPath}\\racadm.exe",
                 Arguments = $"-r {IP} -u {user} -p {password} {args}",
                 CreateNoWindow = false,
                 RedirectStandardOutput = false
@@ -36,30 +38,42 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
             p.WaitForExit();
         }
 
-        // RACADM takes a "type" parameter with values 1-5 (server cert, trust root, etc)
-        public CurrentInventoryItem getCert(int i)
+        // RACADM takes a "type" parameter with values 1-5 (server cert, trust root, etc) and outputs to a file.
+        public List<CurrentInventoryItem> getCert(int i)
         {
             runRacadm($"sslcertdownload -t {i} -f \"cert-{i}.txt\"");
-            return new CurrentInventoryItem() {
-                Alias = i.ToString(),
-                Certificates = new List<string>(){ System.IO.File.ReadAllText($"cert-{i}.txt") },
-                PrivateKeyEntry = false
-             };
+            try
+            {
+                List<string> fileContents = System.IO.File.ReadAllLines($"cert-{i}.txt").ToList();
+                fileContents.RemoveAll(l => l.StartsWith("#"));
+                string[] certs = String.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
+                return certs.Select( c => new CurrentInventoryItem()
+                {
+                    Alias = i.ToString(),
+                    Certificates = new List<string>() { c},
+                    PrivateKeyEntry = false
+                }).ToList();
+            } catch (Exception e)
+            {
+                logger.LogDebug(e.Message);
+                logger.LogTrace(e.StackTrace);
+                return null;
+            }
         }
 
         //Job Entry Point
         public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
-            //NLog Logging to c:\CMS\Logs\CMS_Agent_Log.txt
-            ILogger logger = LogHandler.GetClassLogger(this.GetType());
+            logger = LogHandler.GetClassLogger(this.GetType());
             logger.LogDebug($"Begin Inventory...");
 
             try
             {
+                racadmPath = config.CertificateStoreDetails.StorePath;
                 IP = config.CertificateStoreDetails.ClientMachine;
                 user = config.ServerUsername;
                 password = config.ServerPassword;
-                List<CurrentInventoryItem> inventoryItems = Enumerable.Range(1, 5).Select(i => getCert(i)).ToList();
+                List<CurrentInventoryItem> inventoryItems = Enumerable.Range(1, 5).Select(i => getCert(i)).Where(x => !(x is null)).SelectMany(x => x).ToList();
                 submitInventory.Invoke(inventoryItems);
                 return new JobResult() { Result = Keyfactor.Orchestrators.Common.Enums.OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }

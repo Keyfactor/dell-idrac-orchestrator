@@ -37,7 +37,6 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
             //NLog Logging to c:\CMS\Logs\CMS_Agent_Log.txt
             ILogger logger = LogHandler.GetClassLogger(this.GetType());
             logger.LogDebug($"Begin Reenrollment...");
-
             try
             {
                 //Code logic to:
