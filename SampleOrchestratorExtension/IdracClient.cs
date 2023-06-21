@@ -22,6 +22,7 @@ namespace DellIDRACOrchestrator
 
         public void runRacadm(string args, bool wait=true)
         {
+            Console.WriteLine("args: " + args);
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
                 FileName = $"{racadmPath}\\racadm.exe",

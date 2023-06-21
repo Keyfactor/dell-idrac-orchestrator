@@ -69,7 +69,7 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
         {
             logger = LogHandler.GetClassLogger(this.GetType());
             logger.LogDebug($"Begin Management...");
-
+            Console.WriteLine("Begin Management...");
             try
             {
                 string racadmPath = config.CertificateStoreDetails.StorePath;
@@ -96,7 +96,6 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
             }
             catch (Exception ex)
             {
-                //Status: 2=Success, 3=Warning, 4=Error
                 return new JobResult() { 
                     Result = OrchestratorJobStatusJobResult.Failure, 
                     JobHistoryId = config.JobHistoryId, 
@@ -109,13 +108,15 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
         {
             (string cert, string key) = GetPemFromPFX(config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             string salt = new Random().Next().ToString();
+            Console.Write(salt);
             File.WriteAllText($"uploadkey{salt}.txt", key);
             File.WriteAllText($"uploadcert{salt}.txt", cert);
+            Console.WriteLine($"sslkeyupload -t 1 -f uploadkey{salt}.txt");
             client.runRacadm($"sslkeyupload -t 1 -f uploadkey{salt}.txt");
             // IDRAC automatically restarts on cert upload, which takes about 5 mins.
             client.runRacadm($"sslcertupload -t 1 -f uploadcert{salt}.txt", false);
             File.Delete($"uploadkey{salt}.txt");
-            File.Delete($"uploadcert{salt}.txt");
+            //File.Delete($"uploadcert{salt}.txt");
             return new JobResult()
             {
                 Result = OrchestratorJobStatusJobResult.Success,

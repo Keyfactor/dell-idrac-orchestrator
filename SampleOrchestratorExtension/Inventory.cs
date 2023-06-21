@@ -32,7 +32,7 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
                 string[] certs = string.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
                 return certs.Select( c => new CurrentInventoryItem()
                 {
-                    Alias = i.ToString(),
+                    Alias = $"{i}.{Array.IndexOf(certs,c)}",
                     Certificates = new List<string>() { c},
                     PrivateKeyEntry = false
                 }).ToList();
