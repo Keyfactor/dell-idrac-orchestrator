@@ -1,23 +1,23 @@
 {
   "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
   "integration_type": "orchestrator",
-  "name": "Integration Template",
+  "name": "Dell IDRAC Orchestrator",
   "status": "prototype",
   "support_level": "community",
-  "description": "This project is meant to be a template to quickly build a basic integration product build. Currently in dev, a work in progress,",
+  "description": "Certificate inventory and management for Integrated Dell Remote Access Controller appliances",
   "link_github": false,
   "update_catalog": false,
   "about": {
     "orchestrator": {
       "UOFramework": "10.1",
-      "pam_support": true,
+      "pam_support": false,
       "win": {
         "supportsCreateStore": false,
         "supportsDiscovery": false,
-        "supportsManagementAdd": false,
+        "supportsManagementAdd": true,
         "supportsManagementRemove": false,
         "supportsReenrollment": false,
-        "supportsInventory": false
+        "supportsInventory": true
       },
       "linux": {
         "supportsCreateStore": false,
