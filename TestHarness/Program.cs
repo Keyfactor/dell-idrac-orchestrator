@@ -1,4 +1,4 @@
-﻿using Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension;
+﻿using Keyfactor.Extensions.Orchestrator.IDRAC;
 using Keyfactor.Orchestrators.Extensions;
 
 using System;
@@ -47,7 +47,7 @@ namespace TestHarness
                 JobCertificate = new ManagementJobCertificate()
                 {
                     Contents = contents,
-                    PrivateKeyPassword = "jWdJ2UubSZ5k"
+                    PrivateKeyPassword = ""
                 }
             });
 

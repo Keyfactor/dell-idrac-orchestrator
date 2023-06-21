@@ -1,6 +1,4 @@
-﻿using DellIDRACOrchestrator;
-
-using Keyfactor.Logging;
+﻿using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 
@@ -15,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
+namespace Keyfactor.Extensions.Orchestrator.IDRAC
 {
     public class Management : IManagementJobExtension
     {
@@ -69,7 +67,6 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
         {
             logger = LogHandler.GetClassLogger(this.GetType());
             logger.LogDebug($"Begin Management...");
-            Console.WriteLine("Begin Management...");
             try
             {
                 string racadmPath = config.CertificateStoreDetails.StorePath;

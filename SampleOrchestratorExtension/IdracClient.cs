@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
-namespace DellIDRACOrchestrator
+namespace Keyfactor.Extensions.Orchestrator.IDRAC
 {
     public class IdracClient
     {
@@ -22,7 +20,6 @@ namespace DellIDRACOrchestrator
 
         public void runRacadm(string args, bool wait=true)
         {
-            Console.WriteLine("args: " + args);
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
                 FileName = $"{racadmPath}\\racadm.exe",
@@ -30,8 +27,6 @@ namespace DellIDRACOrchestrator
                 CreateNoWindow = false,
                 RedirectStandardOutput = false
             };
-            Console.WriteLine(cmd.FileName);
-            Console.WriteLine(cmd.Arguments);
             Process p = Process.Start(cmd);
             if (wait)
             {
