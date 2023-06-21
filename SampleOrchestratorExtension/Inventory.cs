@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using DellIDRACOrchestrator;
+
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Extensions;
 
@@ -16,37 +18,18 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
     {
         //Necessary to implement IInventoryJobExtension but not used.  Leave as empty string.
         public string ExtensionName => "";
-
-        public string racadmPath;
-        public string IP;
-        public string user;
-        public string password;
         ILogger logger;
+        IdracClient client;
 
-        public void runRacadm(string args)
-        {
-            ProcessStartInfo cmd = new ProcessStartInfo()
-            {
-                FileName = $"{racadmPath}\\racadm.exe",
-                Arguments = $"-r {IP} -u {user} -p {password} {args}",
-                CreateNoWindow = false,
-                RedirectStandardOutput = false
-            };
-            Console.WriteLine(cmd.FileName);
-            Console.WriteLine(cmd.Arguments);
-            Process p = Process.Start(cmd);
-            p.WaitForExit();
-        }
-
-        // RACADM takes a "type" parameter with values 1-5 (server cert, trust root, etc) and outputs to a file.
+        // RACADM takes a "type" parameter with values 1-10 (server cert, trust root, etc) and outputs to a file.
         public List<CurrentInventoryItem> getCert(int i)
         {
-            runRacadm($"sslcertdownload -t {i} -f \"cert-{i}.txt\"");
+            client.runRacadm($"sslcertdownload -t {i} -f \"cert-{i}.txt\"");
             try
             {
                 List<string> fileContents = System.IO.File.ReadAllLines($"cert-{i}.txt").ToList();
                 fileContents.RemoveAll(l => l.StartsWith("#"));
-                string[] certs = String.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
+                string[] certs = string.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
                 return certs.Select( c => new CurrentInventoryItem()
                 {
                     Alias = i.ToString(),
@@ -69,17 +52,25 @@ namespace Keyfactor.Extensions.Orchestrator.SampleOrchestratorExtension
 
             try
             {
-                racadmPath = config.CertificateStoreDetails.StorePath;
-                IP = config.CertificateStoreDetails.ClientMachine;
-                user = config.ServerUsername;
-                password = config.ServerPassword;
-                List<CurrentInventoryItem> inventoryItems = Enumerable.Range(1, 5).Select(i => getCert(i)).Where(x => !(x is null)).SelectMany(x => x).ToList();
+                string racadmPath = config.CertificateStoreDetails.StorePath;
+                string IP = config.CertificateStoreDetails.ClientMachine;
+                string user = config.ServerUsername;
+                string password = config.ServerPassword;
+                client = new IdracClient(racadmPath, IP, user, password);
+                // IDRAC supports ~10 cert types identified by number. Take union of certs across all types.
+                List<CurrentInventoryItem> inventoryItems = Enumerable.Range(1, 10).Select(i => getCert(i)).Where(x => !(x is null)).SelectMany(x => x).ToList();
                 submitInventory.Invoke(inventoryItems);
                 return new JobResult() { Result = Keyfactor.Orchestrators.Common.Enums.OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
             {
-                return new JobResult() { Result = Keyfactor.Orchestrators.Common.Enums.OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ex.Message };
+                logger.LogDebug(ex.Message);
+                logger.LogTrace(ex.StackTrace);
+                return new JobResult() { 
+                    Result = Orchestrators.Common.Enums.OrchestratorJobStatusJobResult.Failure,
+                    JobHistoryId = config.JobHistoryId, 
+                    FailureMessage = ex.Message 
+                };
             }            
         }
     }
