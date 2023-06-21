@@ -106,13 +106,13 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             (string cert, string key) = GetPemFromPFX(config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             string salt = new Random().Next().ToString();
             Console.Write(salt);
-            File.WriteAllText($"uploadkey{salt}.txt", key);
-            File.WriteAllText($"uploadcert{salt}.txt", cert);
-            Console.WriteLine($"sslkeyupload -t 1 -f uploadkey{salt}.txt");
-            client.runRacadm($"sslkeyupload -t 1 -f uploadkey{salt}.txt");
+            File.WriteAllText($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt", key);
+            File.WriteAllText($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt", cert);
+            //Console.WriteLine($"sslkeyupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
+            client.runRacadm($"sslkeyupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
             // IDRAC automatically restarts on cert upload, which takes about 5 mins.
-            client.runRacadm($"sslcertupload -t 1 -f uploadcert{salt}.txt", false);
-            File.Delete($"uploadkey{salt}.txt");
+            client.runRacadm($"sslcertupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt\"", false);
+            File.Delete($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt");
             //File.Delete($"uploadcert{salt}.txt");
             return new JobResult()
             {

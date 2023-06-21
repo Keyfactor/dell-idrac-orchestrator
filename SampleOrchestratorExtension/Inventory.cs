@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Keyfactor.Logging;
@@ -21,10 +22,10 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
         // RACADM takes a "type" parameter with values 1-10 (server cert, trust root, etc) and outputs to a file.
         public List<CurrentInventoryItem> getCert(int i)
         {
-            client.runRacadm($"sslcertdownload -t {i} -f \"cert-{i}.txt\"");
+            client.runRacadm($"sslcertdownload -t {i} -f \"{client.racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt\"");
             try
             {
-                List<string> fileContents = System.IO.File.ReadAllLines($"cert-{i}.txt").ToList();
+                List<string> fileContents = System.IO.File.ReadAllLines($"{client.racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt").ToList();
                 fileContents.RemoveAll(l => l.StartsWith("#"));
                 string[] certs = string.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
                 return certs.Select( c => new CurrentInventoryItem()
