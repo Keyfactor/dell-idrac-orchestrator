@@ -1,4 +1,11 @@
-﻿using Keyfactor.Logging;
+﻿// Copyright 2024 Keyfactor
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+// and limitations under the License.
+
+using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 
@@ -22,8 +29,60 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
         ILogger logger;
         IdracClient client;
 
+        public JobResult ProcessJob(ManagementJobConfiguration config)
+        {
+            logger = LogHandler.GetClassLogger(this.GetType());
+            logger.LogDebug($"Begin {config.Capability} for job id {config.JobId}...");
+            logger.LogDebug($"Server: {config.CertificateStoreDetails.ClientMachine}");
+            logger.LogDebug($"Store Path: {config.CertificateStoreDetails.StorePath}");
+
+            try
+            {
+                string racadmPath = config.CertificateStoreDetails.StorePath;
+                string IP = config.CertificateStoreDetails.ClientMachine;
+                string user = config.ServerUsername;
+                string password = config.ServerPassword;
+                client = new IdracClient(racadmPath, IP, user, password);
+
+                switch (config.OperationType)
+                {
+                    case CertStoreOperationType.Add:
+                        return AddCert(config);
+                    case CertStoreOperationType.Remove:
+                        throw new InvalidOperationException("'Remove' operation not supported");
+                    case CertStoreOperationType.Create:
+                        throw new InvalidOperationException("'Create' operation not supported");
+                    default:
+                        return new JobResult()
+                        {
+                            Result = OrchestratorJobStatusJobResult.Failure,
+                            JobHistoryId = config.JobHistoryId,
+                            FailureMessage = $"Site {config.CertificateStoreDetails.StorePath} on server {config.CertificateStoreDetails.ClientMachine}: Unsupported operation: {config.OperationType.ToString()}"
+                        };
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                logger.LogTrace(ex.StackTrace);
+
+                return new JobResult()
+                {
+                    Result = OrchestratorJobStatusJobResult.Failure,
+                    JobHistoryId = config.JobHistoryId,
+                    FailureMessage = ex.Message
+                };
+            }
+            finally
+            {
+                logger.MethodExit();
+            }
+        }
+
         private (string, string) GetPemFromPFX(string pfx, string pfxPassword)
         {
+            logger.MethodEntry();
+
             byte[] pfxBytes = Convert.FromBase64String(pfx);
             Pkcs12Store p = new Pkcs12Store(new MemoryStream(pfxBytes), pfxPassword.ToCharArray());
 
@@ -59,61 +118,29 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                 certPem += ( certStart + pemify(Convert.ToBase64String(certEntry.Certificate.GetEncoded())) + certEnd + "\n" );
             }
 
+            logger.MethodExit();
+
             return (certPem, privateKeyString);
         }
 
-        //Job Entry Point
-        public JobResult ProcessJob(ManagementJobConfiguration config)
+        private JobResult AddCert(ManagementJobConfiguration config)
         {
-            logger = LogHandler.GetClassLogger(this.GetType());
-            logger.LogDebug($"Begin Management...");
-            try
-            {
-                string racadmPath = config.CertificateStoreDetails.StorePath;
-                string IP = config.CertificateStoreDetails.ClientMachine;
-                string user = config.ServerUsername;
-                string password = config.ServerPassword;
-                client = new IdracClient(racadmPath, IP, user, password);
+            logger.MethodEntry();
 
-                switch (config.OperationType)
-                {
-                    case CertStoreOperationType.Add:
-                        return addCert(config);
-                    case CertStoreOperationType.Remove:
-                        throw new InvalidOperationException("'Remove' operation not supported");
-                    case CertStoreOperationType.Create:
-                        throw new InvalidOperationException("'Create' operation not supported");
-                    default:
-                        return new JobResult() { 
-                            Result = OrchestratorJobStatusJobResult.Failure, 
-                            JobHistoryId = config.JobHistoryId, 
-                            FailureMessage = $"Site {config.CertificateStoreDetails.StorePath} on server {config.CertificateStoreDetails.ClientMachine}: Unsupported operation: {config.OperationType.ToString()}" 
-                        };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JobResult() { 
-                    Result = OrchestratorJobStatusJobResult.Failure, 
-                    JobHistoryId = config.JobHistoryId, 
-                    FailureMessage = ex.Message 
-                };
-            }
-        }
-
-        public JobResult addCert(ManagementJobConfiguration config)
-        {
             (string cert, string key) = GetPemFromPFX(config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             string salt = new Random().Next().ToString();
-            Console.Write(salt);
+            
             File.WriteAllText($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt", key);
             File.WriteAllText($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt", cert);
-            //Console.WriteLine($"sslkeyupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
+
             client.runRacadm($"sslkeyupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
             // IDRAC automatically restarts on cert upload, which takes about 5 mins.
             client.runRacadm($"sslcertupload -t 1 -f \"{client.racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt\"", false);
+
             File.Delete($"{client.racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt");
-            //File.Delete($"uploadcert{salt}.txt");
+            
+            logger.MethodExit();
+
             return new JobResult()
             {
                 Result = OrchestratorJobStatusJobResult.Success,
