@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using Keyfactor.Logging;
@@ -20,13 +19,13 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
     public class Inventory : IInventoryJobExtension
     {
         public string ExtensionName => "Keyfactor.Extensions.Orchestrator.IDRAC.Inventory";
-        ILogger logger;
-        IdracClient client;
 
         //Job Entry Point
         public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
-            logger = LogHandler.GetClassLogger(this.GetType());
+            ILogger logger = LogHandler.GetClassLogger(this.GetType());
+
+            logger.MethodEntry();
             logger.LogDebug($"Begin {config.Capability} for job id {config.JobId}...");
             logger.LogDebug($"Server: {config.CertificateStoreDetails.ClientMachine}");
             logger.LogDebug($"Store Path: {config.CertificateStoreDetails.StorePath}");
@@ -37,10 +36,11 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                 string IP = config.CertificateStoreDetails.ClientMachine;
                 string user = config.ServerUsername;
                 string password = config.ServerPassword;
-                client = new IdracClient(racadmPath, IP, user, password);
 
-                // IDRAC supports ~10 cert types identified by number. Take union of certs across all types.
-                List<CurrentInventoryItem> inventoryItems = Enumerable.Range(1, 1).Select(i => GetCerts(i)).Where(x => !(x is null)).SelectMany(x => x).ToList();
+                IdracClient client = new IdracClient(racadmPath, IP, user, password);
+
+                // IDRAC supports multiple certificate types.  Only certificate type of 1 (server certificate) is supported here
+                List<CurrentInventoryItem> inventoryItems = client.GetCerts(1).Where(x => !(x is null)).ToList();
                 submitInventory.Invoke(inventoryItems);
                 return new JobResult() { Result = Keyfactor.Orchestrators.Common.Enums.OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
@@ -54,32 +54,6 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                     JobHistoryId = config.JobHistoryId,
                     FailureMessage = ex.Message
                 };
-            }
-        }
-
-        // RACADM takes a "type" parameter with values 1-10 (server cert, trust root, etc) and outputs to a file.
-        public List<CurrentInventoryItem> GetCerts(int i)
-        {
-            logger.MethodEntry();
-
-            client.runRacadm($"sslcertdownload -t {i} -f \"{client.racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt\"");
-            try
-            {
-                List<string> fileContents = System.IO.File.ReadAllLines($"{client.racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt").ToList();
-                fileContents.RemoveAll(l => l.StartsWith("#"));
-                string[] certs = string.Join('\n',fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----"+x).ToArray();
-                return certs.Select( c => new CurrentInventoryItem()
-                {
-                    Alias = $"{i}.{Array.IndexOf(certs,c)}",
-                    Certificates = new List<string>() { c},
-                    PrivateKeyEntry = false
-                }).ToList();
-            } 
-            catch (Exception e)
-            {
-                logger.LogDebug(e.Message);
-                logger.LogTrace(e.StackTrace);
-                return null;
             }
             finally
             {
