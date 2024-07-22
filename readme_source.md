@@ -1,6 +1,84 @@
-### Prereqs
-Orchestrator must run on a Windows Server machine with racadm.exe CLI utility, configured to reach the target IDRAC instance.
-Orchestrator must have read and write access to folder with racadm.exe
+<!-- add integration specific information below -->
+## Overview
+
+The Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension supports the following use cases:
+
+- Inventories the iDRAC instance's server certificate and imports it into Keyfactor Command for management
+- Adds or Replaces an existing or newly enrolled certificate and private key to an existing iDRAC instance.  To replace an existing server certificate, the Ovewrite flag in Keyfactor Command must be selected.
+
+Use cases NOT supported by the F5 Big IQ Orchestrator Extension:
+
+- Removing a server certificate from an iDRAC instance.
+- Inventorying or Managing any other certificate type on an iDRAC intance.
+
+
+## Versioning
+
+The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension can be verified by right clicking on the Imperva.dll file in the Extensions/Imperva installation folder, selecting Properties, and then clicking on the Details tab.
+
+
+## Installation Prerequisites
+
+Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target IDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
+
+
+## iDRAC Orchestrator Extension Installation
+
+1. Stop the Keyfactor Universal Orchestrator Service.
+2. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder named DellIdrac or another name of your choosing.
+3. Download the latest version of the iDRAC Orchestrator Extension from [GitHub](https://github.com/Keyfactor/dell-idrac-orchestrator).
+4. Copy the contents of the download installation zip file into the folder created in step 2.
+5. Start the Keyfactor Universal Orchestrator Service.
+
+
+## iDRAC Orchestrator Extension Configuration
+
+### 1\. In Keyfactor Command, create a new certificate store type by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types, and clicking ADD.  Then enter the following information:
+
+<details>
+<summary><b>Basic Tab</b></summary>
+
+- **Name** – Required. The descriptive display name of the new Certificate Store Type.  Suggested => iDRAC
+- **Short Name** – Required. This value ***must be*** iDRAC.
+- **Custom Capability** - Leave unchecked
+- **Supported Job Types** – Select Inventory and Add.
+- **General Settings** - Select Needs Server.  Select Blueprint Allowed if you plan to use blueprinting.  Leave Uses PowerShell unchecked.
+- **Password Settings** - Leave both options unchecked
+
+</details>
+
+<details>
+<summary><b>Advanced Tab</b></summary>
+
+- **Store Path Type** - Select Freeform
+- **Supports Custom Alias** - Forbidden
+- **Private Key Handling** - Required
+- **PFX Password Style** - Default
+
+</details>
+
+<details>
+<summary><b>Custom Fields Tab</b></summary>
+
+Not Used
+
+</details>
+
+<details>
+<summary><b>Entry Parameters Tab</b></summary>
+
+Not Used
+
+</details>
+
+- **Deploy Certificate to Linked Big IP on Renewal** - optional - This setting determines you wish to deploy renewed certificates (Management-Add jobs with Overwrite selected) to all linked Big IP devices.  Linked devices are determined by looking at all of the client-ssl profiles that reference the renewed certificate that have an associated virtual server linked to a Big IP device.  An "immediate" deployment is then scheduled within F5 Big IQ for each linked Big IP device. 
+  - **Name**=DeployCertificateOnRenewal
+  - **Display Name**=Deploy Certificate to Linked Big IP on Renewal
+  - **Type**=Bool
+  - **Default Value**={client preference}
+  - **Depends on**=unchecked
+  - **Required**=unchecked
+
 
 ### Store type
 Create a store type with shortname/capability "IDRAC". Select "Add" as supported job type, and check "Needs Server". On advanced, set Private Key Handling: Required. All other defaults are fine, and no parameters are needed.

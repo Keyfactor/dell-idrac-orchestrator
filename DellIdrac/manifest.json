@@ -1,11 +1,11 @@
 ﻿{
   "extensions": {
     "Keyfactor.Orchestrators.Extensions.IOrchestratorJobExtension": {
-      "CertStores.IDRAC.Inventory": {
+      "CertStores.iDRAC.Inventory": {
         "assemblypath": "DellIDRACOrchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.IDRAC.Inventory"
       },
-      "CertStores.IDRAC.Management": {
+      "CertStores.iDRAC.Management": {
         "assemblypath": "DellIDRACOrchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.IDRAC.Management"
       }
