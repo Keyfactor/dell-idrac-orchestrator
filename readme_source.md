@@ -11,7 +11,9 @@ Use cases NOT supported by the F5 Big IQ Orchestrator Extension:
 - Removing a server certificate from an iDRAC instance.
 - Inventorying or Managing any other certificate type on an iDRAC intance.
 
-Special Note: When adding or replacing the server certificate, there will be a few minute delay as the iDRAC instance will restart.  As a result, it may take a few minutes before the new certificate is reflected in subsequent Inventory jobs.
+Special Notes:
+* When adding or replacing the server certificate, there will be a few minute delay as the iDRAC instance will restart.  As a result, it may take a few minutes before the new certificate is reflected in subsequent Inventory jobs.
+* When replacing an existing server certificate, the Overwrite checkbox must be selected/checked.  When this checkbox is selected, Keyfactor Command may require you to enter an alias.  This alias is not used by the orchestrator extension, so just enter any value.
 
 
 ## Versioning
@@ -32,7 +34,7 @@ The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orc
 3. Download the latest version of the iDRAC Orchestrator Extension from [GitHub](https://github.com/Keyfactor/dell-idrac-orchestrator).
 4. Copy the contents of the download installation zip file into the folder created in step 2.
 5. Start the Keyfactor Universal Orchestrator Service.
-6. Under Orchestrators => Management, approve the orchestrator you just installed the extension on.
+6. In Keyfactor Command, under Orchestrators => Management, approve the orchestrator you just installed the extension on.
 
 
 ## iDRAC Orchestrator Extension Configuration
@@ -88,7 +90,7 @@ Navigate to Certificate Locations =\> Certificate Stores within Keyfactor Comman
 
 - **Client Machine** – Required.  The IP address of the iDRAC instance being managed.  
   
-- **Store Path** – Required.  Enter the full path where the Racadm executable is installed.  See [Installation Prerequisites](#installation-prerequisites) for more details.
+- **Store Path** – Required.  Enter the full path where the Racadm executable is installed on the Orchestrator server.  See [Installation Prerequisites](#installation-prerequisites) for more details.
 
 - **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
 
@@ -97,7 +99,7 @@ Navigate to Certificate Locations =\> Certificate Stores within Keyfactor Comman
   - UserId/Password
   - PAM provider information used to look up the UserId/Password credentials
 
-  Please make sure these credentials have Admin rights on the F5 Big IQ device and can perform SCP functions as described in the F5 Big IQ Prerequisites section above.
+  Please make sure the user id entered has "Configure" privileges on the iDRAC instance.
 
 - **Use SSL** - N/A.  This value is not referenced in the iDRAC Orchestrator Extension.
 
