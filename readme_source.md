@@ -16,7 +16,7 @@ Special Note: When adding or replacing the server certificate, there will be a f
 
 ## Versioning
 
-The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension can be verified by right clicking on the Imperva.dll file in the Extensions/Imperva installation folder, selecting Properties, and then clicking on the Details tab.
+The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension can be verified by right clicking on the DellIDRACOrchestrator.dll file in the Extensions/DellIdrac installation folder, selecting Properties, and then clicking on the Details tab.
 
 
 ## Installation Prerequisites
