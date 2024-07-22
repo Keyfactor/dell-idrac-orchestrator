@@ -1,7 +1,7 @@
 {
   "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
   "integration_type": "orchestrator",
-  "name": "Dell IDRAC Orchestrator",
+  "name": "Dell iDRAC Orchestrator",
   "status": "prototype",
   "support_level": "kf-supported",
   "description": "Certificate inventory and management for Integrated Dell Remote Access Controller appliances",
@@ -31,9 +31,9 @@
       },
       "store_types": [
         {
-          "Name": "IDRAC",
-          "ShortName": "IDRAC",
-          "Capability": "IDRAC",
+          "Name": "iDRAC",
+          "ShortName": "iDRAC",
+          "Capability": "iDRAC",
           "LocalStore": false,
           "SupportedOperations": {
             "Add": true,
