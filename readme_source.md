@@ -31,7 +31,7 @@ Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](
 5. Start the Keyfactor Universal Orchestrator Service.
 
 
-## iDRAC Orchestrator Extension Configuration
+## Create an iDRAC Certificate Store Type
 
 ### 1\. In Keyfactor Command, create a new certificate store type by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types, and clicking ADD.  Then enter the following information:
 
@@ -71,26 +71,28 @@ Not Used
 
 </details>
 
-- **Deploy Certificate to Linked Big IP on Renewal** - optional - This setting determines you wish to deploy renewed certificates (Management-Add jobs with Overwrite selected) to all linked Big IP devices.  Linked devices are determined by looking at all of the client-ssl profiles that reference the renewed certificate that have an associated virtual server linked to a Big IP device.  An "immediate" deployment is then scheduled within F5 Big IQ for each linked Big IP device. 
-  - **Name**=DeployCertificateOnRenewal
-  - **Display Name**=Deploy Certificate to Linked Big IP on Renewal
-  - **Type**=Bool
-  - **Default Value**={client preference}
-  - **Depends on**=unchecked
-  - **Required**=unchecked
 
+### 2\. Create an iDRAC Certificate Store
 
-### Store type
-Create a store type with shortname/capability "IDRAC". Select "Add" as supported job type, and check "Needs Server". On advanced, set Private Key Handling: Required. All other defaults are fine, and no parameters are needed.
-Default properties have the following meaning:
-Store path - Path to folder containing racadm.exe
-Client machine - Address of target IDRAC instance
-Server username - Username to authenticate racadm.exe to IDRAC
-Server password - Password to authenticate racadm.exe to IDRAC
+Navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered:
 
-### Supported operations
-IDRAC Orchestrator performs inventory operations by executing "racadm.exe sslcertdownload -t ___" with types 1-10.
-IDRAC Orchestrator performs management: add jobs by executing "racadm.exe sslkeyupload" and "racadm.exe sslcertupload -t 1". A private key is required to perform the job.
+- **Category** – Required.  Select the Name you entered when creating the Certificate Store Type.  Suggested value was iDRAC.
 
-### License
-[Apache](https://apache.org/licenses/LICENSE-2.0)
+- **Container** – Optional.  Select a container if utilized.
+
+- **Client Machine** – Required.  The IP address of the iDRAC instance being managed.  
+  
+- **Store Path** – Required.  Enter the full path where the Racadm executable is installed.  See [Installation Prerequisites](#installation-prerequisites) for more details.
+
+- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
+
+- **Server Username/Password** - Required.  The credentials used to log into the iDRAC instance being managed.  These values for server login can be either:
+  
+  - UserId/Password
+  - PAM provider information used to look up the UserId/Password credentials
+
+  Please make sure these credentials have Admin rights on the F5 Big IQ device and can perform SCP functions as described in the F5 Big IQ Prerequisites section above.
+
+- **Use SSL** - N/A.  This value is not referenced in the iDRAC Orchestrator Extension.
+
+- **Inventory Schedule** – Set a schedule for running Inventory jobs or "none", if you choose not to schedule Inventory at this time.
