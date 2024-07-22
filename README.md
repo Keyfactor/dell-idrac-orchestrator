@@ -132,11 +132,14 @@ The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orc
 3. Download the latest version of the iDRAC Orchestrator Extension from [GitHub](https://github.com/Keyfactor/dell-idrac-orchestrator).
 4. Copy the contents of the download installation zip file into the folder created in step 2.
 5. Start the Keyfactor Universal Orchestrator Service.
+6. Under Orchestrators => Management, approve the orchestrator you just installed the extension on.
 
 
-## Create an iDRAC Certificate Store Type
+## iDRAC Orchestrator Extension Configuration
 
-### 1\. In Keyfactor Command, create a new certificate store type by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types, and clicking ADD.  Then enter the following information:
+### Create an iDRAC Certificate Store Type
+
+In Keyfactor Command, create a new certificate store type by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types, and clicking ADD.  Then enter the following information:
 
 <details>
 <summary><b>Basic Tab</b></summary>
@@ -175,7 +178,7 @@ Not Used
 </details>
 
 
-### 2\. Create an iDRAC Certificate Store
+### Create an iDRAC Certificate Store
 
 Navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered:
 
