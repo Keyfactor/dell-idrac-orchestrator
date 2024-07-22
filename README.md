@@ -103,8 +103,8 @@ This text would be entered in as the value for the __Server Password__, instead 
 
 The Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension supports the following use cases:
 
-- Inventories the iDRAC instance's server certificate and imports it into Keyfactor Command for management
-- Adds or Replaces an existing or newly enrolled certificate and private key to an existing iDRAC instance.  To replace an existing server certificate, the Ovewrite flag in Keyfactor Command must be selected.
+- Inventorying the iDRAC instance's server certificate and importing it into Keyfactor Command for management
+- Adding or Replacing an existing or newly enrolled certificate and private key to an existing iDRAC instance.  To replace an existing server certificate, the Ovewrite flag in Keyfactor Command must be selected.
 
 Use cases NOT supported by the F5 Big IQ Orchestrator Extension:
 
@@ -122,7 +122,7 @@ The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orc
 ## Installation Prerequisites
 
 1. The Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target IDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
-2. A user id must be set up in iDRAC with a minimum of "Configure" privileges that will be used by the Racadm utility to manage the store.
+2. A user id must be set up in iDRAC with minimum privileges of "Configure".  This will be used by the Racadm utility to manage the store.
 
 
 ## iDRAC Orchestrator Extension Installation
