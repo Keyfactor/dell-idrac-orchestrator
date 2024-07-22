@@ -11,6 +11,8 @@ Use cases NOT supported by the F5 Big IQ Orchestrator Extension:
 - Removing a server certificate from an iDRAC instance.
 - Inventorying or Managing any other certificate type on an iDRAC intance.
 
+Special Note: When adding or replacing the server certificate, there will be a few minute delay as the iDRAC instance will restart.  As a result, it may take a few minutes before the new certificate is reflected in subsequent Inventory jobs.
+
 
 ## Versioning
 
@@ -19,7 +21,8 @@ The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orc
 
 ## Installation Prerequisites
 
-Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target IDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
+1. The Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target IDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
+2. A user id must be set up in iDRAC with administrative permissions that will be used by the Racadm utility to manage the store.
 
 
 ## iDRAC Orchestrator Extension Installation
