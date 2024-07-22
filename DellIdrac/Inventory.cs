@@ -11,6 +11,7 @@ using System.Linq;
 
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,12 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
     public class Inventory : IInventoryJobExtension
     {
         public string ExtensionName => "Keyfactor.Extensions.Orchestrator.IDRAC.Inventory";
+        public IPAMSecretResolver _resolver;
+
+        public Inventory(IPAMSecretResolver resolver)
+        {
+            _resolver = resolver;
+        }
 
         //Job Entry Point
         public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
@@ -34,8 +41,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             {
                 string racadmPath = config.CertificateStoreDetails.StorePath;
                 string IP = config.CertificateStoreDetails.ClientMachine;
-                string user = config.ServerUsername;
-                string password = config.ServerPassword;
+                string user = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", config.ServerUsername);
+                string password = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", config.ServerPassword);
 
                 IdracClient client = new IdracClient(racadmPath, IP, user, password);
 

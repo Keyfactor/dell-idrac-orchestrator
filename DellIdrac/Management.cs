@@ -8,6 +8,8 @@
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
+
 
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +22,12 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
         //Necessary to implement IManagementJobExtension but not used.  Leave as empty string.
         public string ExtensionName => "";
         ILogger logger;
+        public IPAMSecretResolver _resolver;
+
+        public Management(IPAMSecretResolver resolver)
+        {
+            _resolver = resolver;
+        }
 
         public JobResult ProcessJob(ManagementJobConfiguration config)
         {
@@ -34,8 +42,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             {
                 string racadmPath = config.CertificateStoreDetails.StorePath;
                 string IP = config.CertificateStoreDetails.ClientMachine;
-                string user = config.ServerUsername;
-                string password = config.ServerPassword;
+                string user = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", config.ServerUsername);
+                string password = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", config.ServerPassword);
                 IdracClient client = new IdracClient(racadmPath, IP, user, password);
 
                 switch (config.OperationType)
