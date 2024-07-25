@@ -6,7 +6,7 @@ The Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension supp
 - Inventorying the iDRAC instance's server certificate and importing it into Keyfactor Command for management
 - Adding or Replacing an existing or newly enrolled certificate and private key to an existing iDRAC instance.  To replace an existing server certificate, the Ovewrite flag in Keyfactor Command must be selected.
 
-Use cases NOT supported by the F5 Big IQ Orchestrator Extension:
+Use cases NOT supported by the iDRAC Orchestrator Extension:
 
 - Removing a server certificate from an iDRAC instance.
 - Inventorying or Managing any other certificate type on an iDRAC intance.
