@@ -13,7 +13,7 @@ Use cases NOT supported by the iDRAC Orchestrator Extension:
 Special Notes:
 * When adding or replacing the server certificate, there will be a few minute delay as the iDRAC instance will restart.  As a result, it may take a few minutes before the new certificate is reflected in subsequent Inventory jobs.
 * When replacing an existing server certificate, the Overwrite checkbox must be selected/checked.  When this checkbox is selected, Keyfactor Command may require you to enter an alias.  This alias is not used by the orchestrator extension, so just enter any value.
-
+ 
 
 ## Requirements
 
