@@ -1,104 +1,34 @@
+<h1 align="center" style="border-bottom: none">
+    Dell iDRAC Universal Orchestrator Extension
+</h1>
 
-# Dell iDRAC Orchestrator
-
-Certificate inventory and management for Integrated Dell Remote Access Controller appliances
-
-#### Integration status: Production - Ready for use in production environments.
-
-## About the Keyfactor Universal Orchestrator Extension
-
-This repository contains a Universal Orchestrator Extension which is a plugin to the Keyfactor Universal Orchestrator. Within the Keyfactor Platform, Orchestrators are used to manage “certificate stores” &mdash; collections of certificates and roots of trust that are found within and used by various applications.
-
-The Universal Orchestrator is part of the Keyfactor software distribution and is available via the Keyfactor customer portal. For general instructions on installing Extensions, see the “Keyfactor Command Orchestrator Installation and Configuration Guide” section of the Keyfactor documentation. For configuration details of this specific Extension see below in this readme.
-
-The Universal Orchestrator is the successor to the Windows Orchestrator. This Orchestrator Extension plugin only works with the Universal Orchestrator and does not work with the Windows Orchestrator.
-
-## Support for Dell iDRAC Orchestrator
-
-Dell iDRAC Orchestrator is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com
-
-###### To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
-
----
-
-
----
-
-
-
-## Keyfactor Version Supported
-
-The minimum version of the Keyfactor Universal Orchestrator Framework needed to run this version of the extension is 10.4
-## Platform Specific Notes
-
-The Keyfactor Universal Orchestrator may be installed on either Windows or Linux based platforms. The certificate operations supported by a capability may vary based what platform the capability is installed on. The table below indicates what capabilities are supported based on which platform the encompassing Universal Orchestrator is running.
-| Operation | Win | Linux |
-|-----|-----|------|
-|Supports Management Add|&check; |  |
-|Supports Management Remove|  |  |
-|Supports Create Store|  |  |
-|Supports Discovery|  |  |
-|Supports Reenrollment|  |  |
-|Supports Inventory|&check; |  |
-
-
-## PAM Integration
-
-This orchestrator extension has the ability to connect to a variety of supported PAM providers to allow for the retrieval of various client hosted secrets right from the orchestrator server itself.  This eliminates the need to set up the PAM integration on Keyfactor Command which may be in an environment that the client does not want to have access to their PAM provider.
-
-The secrets that this orchestrator extension supports for use with a PAM Provider are:
-
-|Name|Description|
-|----|-----------|
-|ServerUsername|The user id that will be used to authenticate into the Dell Remote Access Controller|
-|ServerPassword|The password that will be used to authenticate into the Dell Remote Access Controller|
-  
-
-It is not necessary to use a PAM Provider for all of the secrets available above. If a PAM Provider should not be used, simply enter in the actual value to be used, as normal.
-
-If a PAM Provider will be used for one of the fields above, start by referencing the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam). The GitHub repo for the PAM Provider to be used contains important information such as the format of the `json` needed. What follows is an example but does not reflect the `json` values for all PAM Providers as they have different "instance" and "initialization" parameter names and values.
-
-<details><summary>General PAM Provider Configuration</summary>
-<p>
-
-
-
-### Example PAM Provider Setup
-
-To use a PAM Provider to resolve a field, in this example the __Server Password__ will be resolved by the `Hashicorp-Vault` provider, first install the PAM Provider extension from the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) on the Universal Orchestrator.
-
-Next, complete configuration of the PAM Provider on the UO by editing the `manifest.json` of the __PAM Provider__ (e.g. located at extensions/Hashicorp-Vault/manifest.json). The "initialization" parameters need to be entered here:
-
-~~~ json
-  "Keyfactor:PAMProviders:Hashicorp-Vault:InitializationInfo": {
-    "Host": "http://127.0.0.1:8200",
-    "Path": "v1/secret/data",
-    "Token": "xxxxxx"
-  }
-~~~
-
-After these values are entered, the Orchestrator needs to be restarted to pick up the configuration. Now the PAM Provider can be used on other Orchestrator Extensions.
-
-### Use the PAM Provider
-With the PAM Provider configured as an extenion on the UO, a `json` object can be passed instead of an actual value to resolve the field with a PAM Provider. Consult the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) for the specific format of the `json` object.
-
-To have the __Server Password__ field resolved by the `Hashicorp-Vault` provider, the corresponding `json` object from the `Hashicorp-Vault` extension needs to be copied and filed in with the correct information:
-
-~~~ json
-{"Secret":"my-kv-secret","Key":"myServerPassword"}
-~~~
-
-This text would be entered in as the value for the __Server Password__, instead of entering in the actual password. The Orchestrator will attempt to use the PAM Provider to retrieve the __Server Password__. If PAM should not be used, just directly enter in the value for the field.
+<p align="center">
+  <!-- Badges -->
+<img src="https://img.shields.io/badge/integration_status-production-3D1973?style=flat-square" alt="Integration Status: production" />
+<a href="https://github.com/Keyfactor/dell-idrac-orchestrator/releases"><img src="https://img.shields.io/github/v/release/Keyfactor/dell-idrac-orchestrator?style=flat-square" alt="Release" /></a>
+<img src="https://img.shields.io/github/issues/Keyfactor/dell-idrac-orchestrator?style=flat-square" alt="Issues" />
+<img src="https://img.shields.io/github/downloads/Keyfactor/dell-idrac-orchestrator/total?style=flat-square&label=downloads&color=28B905" alt="GitHub Downloads (all assets, all releases)" />
 </p>
-</details> 
 
+<p align="center">
+  <!-- TOC -->
+  <a href="#support">
+    <b>Support</b>
+  </a>
+  ·
+  <a href="#installation">
+    <b>Installation</b>
+  </a>
+  ·
+  <a href="#license">
+    <b>License</b>
+  </a>
+  ·
+  <a href="https://github.com/orgs/Keyfactor/repositories?q=orchestrator">
+    <b>Related Integrations</b>
+  </a>
+</p>
 
-
-
----
-
-
-<!-- add integration specific information below -->
 ## Overview
 
 The Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension supports the following use cases:
@@ -116,95 +46,236 @@ Special Notes:
 * When replacing an existing server certificate, the Overwrite checkbox must be selected/checked.  When this checkbox is selected, Keyfactor Command may require you to enter an alias.  This alias is not used by the orchestrator extension, so just enter any value.
 
 
-## Versioning
 
-The version number of a the Integrated Dell Remote Access Controller (iDRAC) Orchestrator Extension can be verified by right clicking on the DellIDRACOrchestrator.dll file in the Extensions/DellIdrac installation folder, selecting Properties, and then clicking on the Details tab.
+## Compatibility
 
+This integration is compatible with Keyfactor Universal Orchestrator version 10.4 and later.
 
-## Installation Prerequisites
+## Support
+The Dell iDRAC Universal Orchestrator extension is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
+ 
+> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+
+## Requirements & Prerequisites
+
+Before installing the Dell iDRAC Universal Orchestrator extension, we recommend that you install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
+
 
 1. The Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target iDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
 2. A user id must be set up in iDRAC with minimum privileges of "Configure".  This will be used by the Racadm utility to manage the store.
 
 
-## iDRAC Orchestrator Extension Installation
+## Create the iDRAC Certificate Store Type
 
-1. Stop the Keyfactor Universal Orchestrator Service.
-2. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder named DellIdrac or another name of your choosing.
-3. Download the latest version of the iDRAC Orchestrator Extension from [GitHub](https://github.com/Keyfactor/dell-idrac-orchestrator).
-4. Copy the contents of the download installation zip file into the folder created in step 2.
-5. Start the Keyfactor Universal Orchestrator Service.
-6. In Keyfactor Command, under Orchestrators => Management, approve the orchestrator you just installed the extension on.
+To use the Dell iDRAC Universal Orchestrator extension, you **must** create the iDRAC Certificate Store Type. This only needs to happen _once_ per Keyfactor Command instance.
 
 
-## iDRAC Orchestrator Extension Configuration
 
-### Create an iDRAC Certificate Store Type
+* **Create iDRAC using kfutil**:
 
-In Keyfactor Command, create a new certificate store type by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types, and clicking ADD.  Then enter the following information:
+    ```shell
+    # iDRAC
+    kfutil store-types create iDRAC
+    ```
 
-<details>
-<summary><b>Basic Tab</b></summary>
+* **Create iDRAC manually in the Command UI**:
+    <details><summary>Create iDRAC manually in the Command UI</summary>
 
-- **Name** – Required. The descriptive display name of the new Certificate Store Type.  Suggested => iDRAC
-- **Short Name** – Required. This value ***must be*** iDRAC.
-- **Custom Capability** - Leave unchecked
-- **Supported Job Types** – Select Inventory and Add.
-- **General Settings** - Select Needs Server.  Select Blueprint Allowed if you plan to use blueprinting.  Leave Uses PowerShell unchecked.
-- **Password Settings** - Leave both options unchecked
+    Create a store type called `iDRAC` with the attributes in the tables below:
 
-</details>
+    #### Basic Tab
+    | Attribute | Value | Description |
+    | --------- | ----- | ----- |
+    | Name | iDRAC | Display name for the store type (may be customized) |
+    | Short Name | iDRAC | Short display name for the store type |
+    | Capability | iDRAC | Store type name orchestrator will register with. Check the box to allow entry of value |
+    | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
+    | Supports Remove | 🔲 Unchecked |  Indicates that the Store Type supports Management Remove |
+    | Supports Discovery | 🔲 Unchecked |  Indicates that the Store Type supports Discovery |
+    | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
+    | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
+    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
+    | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
+    | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
+    | Requires Store Password | 🔲 Unchecked | Enables users to optionally specify a store password when defining a Certificate Store. |
+    | Supports Entry Password | 🔲 Unchecked | Determines if an individual entry within a store can have a password. |
 
-<details>
-<summary><b>Advanced Tab</b></summary>
+    The Basic tab should look like this:
 
-- **Store Path Type** - Select Freeform
-- **Supports Custom Alias** - Forbidden
-- **Private Key Handling** - Required
-- **PFX Password Style** - Default
+    ![iDRAC Basic Tab](docsource/images/iDRAC-basic-store-type-dialog.png)
 
-</details>
+    #### Advanced Tab
+    | Attribute | Value | Description |
+    | --------- | ----- | ----- |
+    | Supports Custom Alias | Forbidden | Determines if an individual entry within a store can have a custom Alias. |
+    | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+    | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
-<details>
-<summary><b>Custom Fields Tab</b></summary>
+    The Advanced tab should look like this:
 
-Not Used
+    ![iDRAC Advanced Tab](docsource/images/iDRAC-advanced-store-type-dialog.png)
 
-</details>
+    #### Custom Fields Tab
+    Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
 
-<details>
-<summary><b>Entry Parameters Tab</b></summary>
+    | Name | Display Name | Description | Type | Default Value/Options | Required |
+    | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
+    | ServerUsername | Server Username | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. | Secret |  | 🔲 Unchecked |
+    | ServerPassword | Server Password | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. | Secret |  | 🔲 Unchecked |
 
-Not Used
+    The Custom Fields tab should look like this:
 
-</details>
-
-
-### Create an iDRAC Certificate Store
-
-Navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered:
-
-- **Category** – Required.  Select the Name you entered when creating the Certificate Store Type.  Suggested value was iDRAC.
-
-- **Container** – Optional.  Select a container if utilized.
-
-- **Client Machine** – Required.  The IP address of the iDRAC instance being managed.  
-  
-- **Store Path** – Required.  Enter the full path where the Racadm executable is installed on the Orchestrator server.  See [Installation Prerequisites](#installation-prerequisites) for more details.
-
-- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
-
-- **Server Username/Password** - Required.  The credentials used to log into the iDRAC instance being managed.  These values for server login can be either:
-  
-  - UserId/Password
-  - PAM provider information used to look up the UserId/Password credentials
-
-  Please make sure the user id entered has "Configure" privileges on the iDRAC instance.
-
-- **Use SSL** - N/A.  This value is not referenced in the iDRAC Orchestrator Extension.
-
-- **Inventory Schedule** – Set a schedule for running Inventory jobs or "none", if you choose not to schedule Inventory at this time.
-
-When creating cert store type manually, that store property names and entry parameter names are case sensitive
+    ![iDRAC Custom Fields Tab](docsource/images/iDRAC-custom-fields-store-type-dialog.png)
 
 
+
+    </details>
+
+## Installation
+
+1. **Download the latest Dell iDRAC Universal Orchestrator extension from GitHub.** 
+
+    Navigate to the [Dell iDRAC Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/dell-idrac-orchestrator/releases/latest). Refer to the compatibility matrix below to determine whether the `net6.0` or `net8.0` asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `dell-idrac-orchestrator` .NET version to download |
+    | --------- | ----------- | ----------- | ----------- |
+    | Older than `11.0.0` | | | `net6.0` |
+    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` | 
+    | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` | 
+    | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` | 
+    | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+
+    Unzip the archive containing extension assemblies to a known location.
+
+    > **Note** If you don't see an asset with a corresponding .NET version, you should always assume that it was compiled for `net6.0`.
+
+2. **Locate the Universal Orchestrator extensions directory.**
+
+    * **Default on Windows** - `C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions`
+    * **Default on Linux** - `/opt/keyfactor/orchestrator/extensions`
+    
+3. **Create a new directory for the Dell iDRAC Universal Orchestrator extension inside the extensions directory.**
+        
+    Create a new directory called `dell-idrac-orchestrator`.
+    > The directory name does not need to match any names used elsewhere; it just has to be unique within the extensions directory.
+
+4. **Copy the contents of the downloaded and unzipped assemblies from __step 2__ to the `dell-idrac-orchestrator` directory.**
+
+5. **Restart the Universal Orchestrator service.**
+
+    Refer to [Starting/Restarting the Universal Orchestrator service](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/StarttheService.htm).
+
+
+6. **(optional) PAM Integration** 
+
+    The Dell iDRAC Universal Orchestrator extension is compatible with all supported Keyfactor PAM extensions to resolve PAM-eligible secrets. PAM extensions running on Universal Orchestrators enable secure retrieval of secrets from a connected PAM provider.
+
+    To configure a PAM provider, [reference the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) to select an extension, and follow the associated instructions to install it on the Universal Orchestrator (remote).
+
+
+> The above installation steps can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions).
+
+
+
+## Defining Certificate Stores
+
+
+
+* **Manually with the Command UI**
+
+    <details><summary>Create Certificate Stores manually in the UI</summary>
+
+    1. **Navigate to the _Certificate Stores_ page in Keyfactor Command.**
+
+        Log into Keyfactor Command, toggle the _Locations_ dropdown, and click _Certificate Stores_.
+
+    2. **Add a Certificate Store.**
+
+        Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+        | Attribute | Description |
+        | --------- | ----------- |
+        | Category | Select "iDRAC" or the customized certificate store name from the previous step. |
+        | Container | Optional container to associate certificate store with. |
+        | Client Machine | The IP address of the iDRAC instance being managed. |
+        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements-&-prerequisites) above for more details. |
+        | Orchestrator | Select an approved orchestrator capable of managing `iDRAC` certificates. Specifically, one with the `iDRAC` capability. |
+        | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
+        | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
+
+
+        
+
+        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+        | Attribute | Description |
+        | --------- | ----------- |
+        | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
+        | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
+
+
+        Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+
+        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
+        </details>
+        
+
+    </details>
+
+* **Using kfutil**
+    
+    <details><summary>Create Certificate Stores with kfutil</summary>
+    
+    1. **Generate a CSV template for the iDRAC certificate store**
+
+        ```shell
+        kfutil stores import generate-template --store-type-name iDRAC --outpath iDRAC.csv
+        ```
+    2. **Populate the generated CSV file**
+
+        Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+        | Attribute | Description |
+        | --------- | ----------- |
+        | Category | Select "iDRAC" or the customized certificate store name from the previous step. |
+        | Container | Optional container to associate certificate store with. |
+        | Client Machine | The IP address of the iDRAC instance being managed. |
+        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements-&-prerequisites) above for more details. |
+        | Orchestrator | Select an approved orchestrator capable of managing `iDRAC` certificates. Specifically, one with the `iDRAC` capability. |
+        | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
+        | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
+
+
+        
+
+        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+        | Attribute | Description |
+        | --------- | ----------- |
+        | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
+        | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
+
+
+        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
+        </details>
+        
+
+    3. **Import the CSV file to create the certificate stores** 
+
+        ```shell
+        kfutil stores import csv --store-type-name iDRAC --file iDRAC.csv
+        ```
+    </details>
+
+> The content in this section can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+
+
+
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE).
+
+## Related Integrations
+
+See all [Keyfactor Universal Orchestrator extensions](https://github.com/orgs/Keyfactor/repositories?q=orchestrator).

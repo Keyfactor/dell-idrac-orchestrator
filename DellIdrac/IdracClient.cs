@@ -58,7 +58,7 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                 {
                     Alias = $"{i}.{Array.IndexOf(certs, c)}",
                     Certificates = new List<string>() { c },
-                    PrivateKeyEntry = false
+                    PrivateKeyEntry = true
                 }).ToList();
             }
             catch (Exception e)
