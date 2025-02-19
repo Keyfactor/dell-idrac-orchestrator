@@ -34,7 +34,7 @@
               "Type": "Secret",
               "DependsOn": "",
               "DefaultValue": "",
-              "Required": false,
+              "Required": true,
               "IsPAMEligible": true,
               "Description": "The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed."
             },
@@ -44,7 +44,7 @@
               "Type": "Secret",
               "DependsOn": "",
               "DefaultValue": "",
-              "Required": false,
+              "Required": true,
               "IsPAMEligible": true,
               "Description": "The password (or, if using a PAM provider, the key pointing to the password) for the user ID above."
             }
