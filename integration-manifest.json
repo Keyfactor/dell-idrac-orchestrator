@@ -50,7 +50,7 @@
             }
           ],
           "ClientMachineDescription": "The IP address of the iDRAC instance being managed.",
-          "StorePathDescription": "Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements-&-prerequisites) above for more details.",
+          "StorePathDescription": "Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements--prerequisites) above for more details.",
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
