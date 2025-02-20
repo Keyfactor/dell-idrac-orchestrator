@@ -120,8 +120,8 @@ To use the Dell iDRAC Universal Orchestrator extension, you **must** create the 
 
     | Name | Display Name | Description | Type | Default Value/Options | Required |
     | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
-    | ServerUsername | Server Username | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. | Secret |  | 🔲 Unchecked |
-    | ServerPassword | Server Password | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. | Secret |  | 🔲 Unchecked |
+    | ServerUsername | Server Username | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. | Secret |  | ✅ Checked |
+    | ServerPassword | Server Password | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. | Secret |  | ✅ Checked |
 
     The Custom Fields tab should look like this:
 
