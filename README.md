@@ -52,7 +52,7 @@ Special Notes:
 This integration is compatible with Keyfactor Universal Orchestrator version 10.4 and later.
 
 ## Support
-The Dell iDRAC Universal Orchestrator extension is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
+The Dell iDRAC Universal Orchestrator extension If you have a support issue, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com. 
  
 > To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
@@ -196,7 +196,7 @@ To use the Dell iDRAC Universal Orchestrator extension, you **must** create the 
         | Category | Select "iDRAC" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
         | Client Machine | The IP address of the iDRAC instance being managed. |
-        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements-&-prerequisites) above for more details. |
+        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements--prerequisites) above for more details. |
         | Orchestrator | Select an approved orchestrator capable of managing `iDRAC` certificates. Specifically, one with the `iDRAC` capability. |
         | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
         | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
@@ -238,7 +238,7 @@ To use the Dell iDRAC Universal Orchestrator extension, you **must** create the 
         | Category | Select "iDRAC" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
         | Client Machine | The IP address of the iDRAC instance being managed. |
-        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements-&-prerequisites) above for more details. |
+        | Store Path | Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements--prerequisites) above for more details. |
         | Orchestrator | Select an approved orchestrator capable of managing `iDRAC` certificates. Specifically, one with the `iDRAC` capability. |
         | ServerUsername | The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed. |
         | ServerPassword | The password (or, if using a PAM provider, the key pointing to the password) for the user ID above. |
