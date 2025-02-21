@@ -1,70 +1,70 @@
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
-  "integration_type": "orchestrator",
-  "name": "Dell iDRAC Orchestrator",
-  "status": "production",
-  "support_level": "kf-supported",
-  "description": "Certificate inventory and management for Integrated Dell Remote Access Controller appliances",
-  "link_github": true,
-  "update_catalog": true,
-  "release_dir": "DellIdrac/bin/Release",
-  "release_project": "DellIdrac/DellIDRACOrchestrator.csproj",
-  "about": {
-    "orchestrator": {
-      "UOFramework": "10.4",
-      "keyfactor_platform_version": "10.3",
-      "pam_support": true,
-      "store_types": [
-        {
-          "Name": "iDRAC",
-          "ShortName": "iDRAC",
-          "Capability": "iDRAC",
-          "LocalStore": false,
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": false,
-            "Enrollment": false,
-            "Remove": false
-          },
-          "Properties": [
-            {
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": true,
-              "IsPAMEligible": true,
-              "Description": "The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed."
-            },
-            {
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": true,
-              "IsPAMEligible": true,
-              "Description": "The password (or, if using a PAM provider, the key pointing to the password) for the user ID above."
-            }
-          ],
-          "ClientMachineDescription": "The IP address of the iDRAC instance being managed.",
-          "StorePathDescription": "Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements--prerequisites) above for more details.",
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Required",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Forbidden"
+    "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
+    "integration_type": "orchestrator",
+    "name": "Dell iDRAC Orchestrator",
+    "status": "production",
+    "support_level": "kf-supported",
+    "description": "Certificate inventory and management for Integrated Dell Remote Access Controller appliances",
+    "link_github": true,
+    "update_catalog": true,
+    "release_dir": "DellIdrac/bin/Release",
+    "release_project": "DellIdrac/DellIDRACOrchestrator.csproj",
+    "about": {
+        "orchestrator": {
+            "UOFramework": "10.4",
+            "keyfactor_platform_version": "10.3",
+            "pam_support": true,
+            "store_types": [
+                {
+                    "Name": "iDRAC",
+                    "ShortName": "iDRAC",
+                    "Capability": "iDRAC",
+                    "LocalStore": false,
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": false,
+                        "Enrollment": false,
+                        "Remove": false
+                    },
+                    "Properties": [
+                        {
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": true,
+                            "IsPAMEligible": true,
+                            "Description": "The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed."
+                        },
+                        {
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": true,
+                            "IsPAMEligible": true,
+                            "Description": "The password (or, if using a PAM provider, the key pointing to the password) for the user ID above."
+                        }
+                    ],
+                    "ClientMachineDescription": "The IP address of the iDRAC instance being managed.",
+                    "StorePathDescription": "Enter the full path where the Racadm executable is installed on the orchestrator server.  See [Requirements & Prerequisites](#requirements--prerequisites) above for more details.",
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Required",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": true,
+                    "CustomAliasAllowed": "Forbidden"
+                }
+            ]
         }
-      ]
     }
-  }
 }
