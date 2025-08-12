@@ -156,7 +156,7 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
                 FileName = $"{racadmPath}\\racadm.exe",
-                Arguments = $"-r {IP} -u {user} -p {password} {args}",
+                Arguments = $"-r {IP} -u {user} -p {password} -S {args}",
                 CreateNoWindow = false,
                 UseShellExecute = false,
                 RedirectStandardOutput = true
