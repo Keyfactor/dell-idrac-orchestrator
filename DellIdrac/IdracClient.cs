@@ -173,8 +173,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                 p.WaitForExit();
             }
 
-            logger.LogDebug($"Command output: {stdOut}");
-            logger.LogDebug($"Exit Code & Error Text: {exitCode} - {stdErr}");
+            logger.LogTrace($"Command output: {stdOut}");
+            logger.LogTrace($"Exit Code & Error Text: {exitCode} - {stdErr}");
             logger.MethodExit();
         }
     }
