@@ -163,21 +163,43 @@ the Keyfactor Command Portal
 
    ![iDRAC Custom Fields Tab](docsource/images/iDRAC-custom-fields-store-type-dialog.png)
 
+
+   ###### Server Username
+   The user ID (or, if using a PAM provider, the key pointing to the user ID) to log into the iDRAC instance being managed.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   The password (or, if using a PAM provider, the key pointing to the password) for the user ID above.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+
+
    </details>
 
 ## Installation
 
 1. **Download the latest Dell iDRAC Universal Orchestrator extension from GitHub.**
 
-    Navigate to the [Dell iDRAC Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/dell-idrac-orchestrator/releases/latest). Refer to the compatibility matrix below to determine whether the `net6.0` or `net8.0` asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+    Navigate to the [Dell iDRAC Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/dell-idrac-orchestrator/releases/latest). Refer to the compatibility matrix below to determine the asset should be downloaded. Then, click the corresponding asset to download the zip archive.
 
    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `dell-idrac-orchestrator` .NET version to download |
    | --------- | ----------- | ----------- | ----------- |
    | Older than `11.0.0` | | | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` || Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` | 
 
     Unzip the archive containing extension assemblies to a known location.
 
