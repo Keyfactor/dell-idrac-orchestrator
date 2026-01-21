@@ -156,20 +156,25 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
                 FileName = $"{racadmPath}\\racadm.exe",
-                Arguments = $"-r {IP} -u {user} -p {password} {args}",
+                Arguments = $"--nocertwarn -r {IP} -u {user} -p {password} {args}",
                 CreateNoWindow = false,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
+
             Process p = Process.Start(cmd);
             string stdOut = p.StandardOutput.ReadToEnd();
+            string stdErr = p.StandardError.ReadToEnd();
+            int exitCode = p.ExitCode;
 
             if (wait)
             {
                 p.WaitForExit();
             }
 
-            logger.LogDebug($"Command output: {stdOut}");
+            logger.LogTrace($"Command output: {stdOut}");
+            logger.LogTrace($"Exit Code & Error Text: {exitCode} - {stdErr}");
             logger.MethodExit();
         }
     }
