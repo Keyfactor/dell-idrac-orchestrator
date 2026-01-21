@@ -8,7 +8,7 @@
       "CertStores.IDRAC.Management": {
         "assemblypath": "DellIDRACOrchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.IDRAC.Management"
-      },
+      }
     }
   }
 }
