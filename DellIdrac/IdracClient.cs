@@ -63,7 +63,7 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             }
             catch (Exception e)
             {
-                logger.LogDebug(e.Message);
+                logger.LogError(e.Message);
                 logger.LogTrace(e.StackTrace);
                 return null;
             }
