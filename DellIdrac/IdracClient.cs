@@ -176,6 +176,9 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             logger.LogTrace($"Command output: {stdOut}");
             logger.LogTrace($"Exit Code & Error Text: {exitCode} - {stdErr}");
             logger.MethodExit();
+
+            if (exitCode > 0)
+                throw new Exception ($"Error processing command {args} - {exitCode.ToString()}: {stdErr}");
         }
     }
 }
