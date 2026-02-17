@@ -1,3 +1,7 @@
+v1.1.1
+- Ignore self signed certificate errors
+- Improve error handling
+
 v1.1.0
 - Bug fix to return true for private key entry during inventory
 - Add dual build for .net6/8
