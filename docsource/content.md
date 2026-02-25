@@ -17,5 +17,5 @@ Special Notes:
 
 ## Requirements
 
-1. The Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target iDRAC instance.  The Orchestrator must have read and write access to the folder where racadm.exe is installed.
+1. The Orchestrator must run on a Windows Server machine with the [Racadm CLI utility](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=8gmf6) installed, configured to reach the target iDRAC instance.  The account that the Universal Orchestrator service is running under **must** have read and write access to the folder where racadm.exe is installed.
 2. A user id must be set up in iDRAC with minimum privileges of "Login" and "System Control".  This will be used by the Racadm utility to manage the store.
