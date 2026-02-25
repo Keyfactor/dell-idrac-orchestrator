@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Keyfactor.Extensions.Orchestrator.IDRAC
 {
@@ -63,7 +64,7 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             }
             catch (Exception e)
             {
-                logger.LogDebug(e.Message);
+                logger.LogError(e.Message);
                 logger.LogTrace(e.StackTrace);
                 return null;
             }
@@ -82,6 +83,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
                 throw new Exception($"Error attempting to add certificate. Certificate for store type 1 already exists and Overwrite not selected.  Please make sure to set Overwrite=true and reschedule job.");
             }
 
+            //logger.LogTrace($"***B64 PFX CERT***: {config.JobCertificate.Contents}");
+            //logger.LogTrace($"***CERT PSWD***: {config.JobCertificate.PrivateKeyPassword}");
             (string cert, string key) = GetPemFromPFX(config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             string salt = new Random().Next().ToString();
 
@@ -89,8 +92,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             File.WriteAllText($"{racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt", cert);
 
             runRacadm($"sslkeyupload -t 1 -f \"{racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
-            // IDRAC automatically restarts on cert upload, which takes about 5 mins.
-            runRacadm($"sslcertupload -t 1 -f \"{racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt\"", false);
+            runRacadm($"sslcertupload -t 1 -f \"{racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt\"");
+            runRacadm($"racreset");
 
             File.Delete($"{racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt");
 
@@ -109,6 +112,9 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             logger.MethodEntry();
 
             byte[] pfxBytes = Convert.FromBase64String(pfx);
+            //logger.LogTrace($"***GetPemFromPFX B64 PFX CERT***: {pfx}");
+            //logger.LogTrace($"***GetPemFromPFX CERT PSWD***: {pfx}");
+            //logger.LogTrace($"***GetPemFromPFX CERT BYTE LENGTH***: {pfxBytes.Length.ToString()}");
             Pkcs12Store p = new Pkcs12Store(new MemoryStream(pfxBytes), pfxPassword.ToCharArray());
 
             // Extract private key
@@ -156,21 +162,29 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             ProcessStartInfo cmd = new ProcessStartInfo()
             {
                 FileName = $"{racadmPath}\\racadm.exe",
-                Arguments = $"-r {IP} -u {user} -p {password} {args}",
+                Arguments = $"--nocertwarn -r {IP} -u {user} -p {password} {args}",
                 CreateNoWindow = false,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
+
             Process p = Process.Start(cmd);
             string stdOut = p.StandardOutput.ReadToEnd();
+            string stdErr = p.StandardError.ReadToEnd();
+            int exitCode = p.ExitCode;
 
             if (wait)
             {
                 p.WaitForExit();
             }
 
-            logger.LogDebug($"Command output: {stdOut}");
+            logger.LogTrace($"Command output: {stdOut}");
+            logger.LogTrace($"Exit Code & Error Text: {exitCode} - {stdErr}");
             logger.MethodExit();
+
+            if (exitCode > 0)
+                throw new Exception ($"Error processing command {args} - {exitCode.ToString()}: {stdErr}");
         }
     }
 }
