@@ -1,6 +1,7 @@
 v1.1.1
 - Ignore self signed certificate errors
 - Improve error handling
+- Add iDRAC restart call after adding/replacing certificate
 
 v1.1.0
 - Bug fix to return true for private key entry during inventory
