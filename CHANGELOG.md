@@ -1,3 +1,7 @@
+v1.1.2
+- Use unique file name for cerificate download
+- Use temp folder location rather than racadm install location for temporary file creation
+
 v1.1.1
 - Ignore self signed certificate errors
 - Improve error handling
