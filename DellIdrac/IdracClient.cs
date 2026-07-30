@@ -55,7 +55,7 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             {
                 runRacadm($"sslcertdownload -t {i} -f \"{certFileName}\"");
 
-                List<string> fileContents = System.IO.File.ReadAllLines($"certFileName").ToList();
+                List<string> fileContents = System.IO.File.ReadAllLines($"{certFileName}").ToList();
                 fileContents.RemoveAll(l => l.StartsWith("#"));
                 string[] certs = string.Join('\n', fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----" + x).ToArray();
                 return certs.Select(c => new CurrentInventoryItem()
