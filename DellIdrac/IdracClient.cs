@@ -49,10 +49,13 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
         {
             logger.MethodEntry();
 
-            runRacadm($"sslcertdownload -t {i} -f \"{racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt\"");
+            string certFileName = Path.GetTempPath() + Guid.NewGuid().ToString().Replace("-",string.Empty) + ".txt";
+
             try
             {
-                List<string> fileContents = System.IO.File.ReadAllLines($"{racadmPath}{Path.DirectorySeparatorChar}cert-{i}.txt").ToList();
+                runRacadm($"sslcertdownload -t {i} -f \"{certFileName}\"");
+
+                List<string> fileContents = System.IO.File.ReadAllLines($"{certFileName}").ToList();
                 fileContents.RemoveAll(l => l.StartsWith("#"));
                 string[] certs = string.Join('\n', fileContents).Split("-----BEGIN CERTIFICATE-----", StringSplitOptions.RemoveEmptyEntries).Select(x => "-----BEGIN CERTIFICATE-----" + x).ToArray();
                 return certs.Select(c => new CurrentInventoryItem()
@@ -70,6 +73,11 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             }
             finally
             {
+                try
+                {
+                    File.Delete(certFileName);
+                }
+                catch { }
                 logger.MethodExit();
             }
         }
@@ -77,6 +85,8 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
         internal JobResult AddCert(ManagementJobConfiguration config)
         {
             logger.MethodEntry();
+
+            string tempPath = Path.GetTempPath();
 
             if (!config.Overwrite && GetCerts(1).Count > 0)
             {
@@ -88,23 +98,35 @@ namespace Keyfactor.Extensions.Orchestrator.IDRAC
             (string cert, string key) = GetPemFromPFX(config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             string salt = new Random().Next().ToString();
 
-            File.WriteAllText($"{racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt", key);
-            File.WriteAllText($"{racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt", cert);
-
-            runRacadm($"sslkeyupload -t 1 -f \"{racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt\"");
-            runRacadm($"sslcertupload -t 1 -f \"{racadmPath}{Path.DirectorySeparatorChar}uploadcert{salt}.txt\"");
-            runRacadm($"racreset");
-
-            File.Delete($"{racadmPath}{Path.DirectorySeparatorChar}uploadkey{salt}.txt");
-
-            logger.MethodExit();
-
-            return new JobResult()
+            try
             {
-                Result = OrchestratorJobStatusJobResult.Success,
-                JobHistoryId = config.JobHistoryId,
-                FailureMessage = ""
-            };
+                File.WriteAllText($"{tempPath}uploadkey{salt}.txt", key);
+                File.WriteAllText($"{tempPath}uploadcert{salt}.txt", cert);
+
+                runRacadm($"sslkeyupload -t 1 -f \"{tempPath}uploadkey{salt}.txt\"");
+                runRacadm($"sslcertupload -t 1 -f \"{tempPath}uploadcert{salt}.txt\"");
+                runRacadm($"racreset");
+
+                return new JobResult()
+                {
+                    Result = OrchestratorJobStatusJobResult.Success,
+                    JobHistoryId = config.JobHistoryId,
+                    FailureMessage = ""
+                };
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete($"{tempPath}uploadkey{salt}.txt");
+                    File.Delete($"{tempPath}uploadcert{salt}.txt");
+                }
+                catch { }
+                finally
+                {
+                    logger.MethodExit();
+                }
+            }
         }
 
         private (string, string) GetPemFromPFX(string pfx, string pfxPassword)
